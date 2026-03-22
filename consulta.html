@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Consulta de Pagos - Colegio</title>
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; background-color: #f0f2f5; }
+        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 550px; margin: auto; }
+        
+        /* Estilo para el encabezado con logo */
+        .header-consulta {
+            display: flex;
+            align-items: left;
+            gap: 15px;
+            margin-bottom: 35px;
+            justify-content: center; /* Centra el bloque completo */
+        }
+        .logo-consulta {
+            width: 90px; /* Tamaño adecuado para la consulta */
+            height: auto;
+        }
+        h2 { color: #1a73e8; margin: 0; text-align: left; }
+
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 6px; outline: none; }
+        button { padding: 10px 20px; cursor: pointer; background-color: #1a73e8; color: white; border: none; border-radius: 6px; transition: 0.3s; }
+        button:hover { background-color: #1557b0; }
+        .pago-card { border: 1px solid #eee; padding: 20px; margin-top: 15px; border-radius: 10px; background: #fafafa; position: relative; }
+        .btn-pagar { background-color: #009ee3; width: 100%; font-weight: bold; margin-top: 15px; font-size: 16px; }
+        .btn-pdf { background-color: #28a745; width: 100%; margin-top: 10px; font-weight: bold; }
+        .status-pagado { color: #28a745; font-weight: bold; border: 1px solid #28a745; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+        .status-pendiente { color: #dc3545; font-weight: bold; border: 1px solid #dc3545; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-consulta">
+        <img src="logo_utac.png" alt="Logo UTAC" class="logo-consulta">
+        <h2>Sistema de Pagos Escolares</h2>
+    </div>
+
+    <div class="search-box">
+        <input type="text" id="matricula" placeholder="Introduce tu matrícula...">
+        <button onclick="buscarAlumno()">Buscar</button>
+    </div>
+
+    <div id="resultado"></div>
+</div>
+
+<script src="alumno.js"></script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Colegio - UTAC</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Contenedor del encabezado con Flexbox para alinear a la izquierda */
+        header {
+            display: flex;
+            align-items: center; /* Centra verticalmente logo y texto */
+            gap: 100px;           /* Espacio entre el logo y el texto */
+            margin-bottom: 30px;
+            text-align: center;    
+            padding: 10px 0;
+        }
+
+        .logo-header {
+            width: 100px;        /* Tamaño del logo */
+            height: auto;
+            border-radius: 8px;  
+        }
+
+        .header-text h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: #333;
+        }
+
+        .header-text p {
+            margin: 2px 0;
+            color: #666;
+        }
+
+        /* Estilo para que se vea bien en móviles */
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <img src="logo_utac.png" alt="Logo UTAC" class="logo-header">
+            
+            <div class="header-text">
+                <h1>🏫 Sistema Control de Pagos</h1>
+                <p><strong>UNIVERSIDAD TACANÁ UTAC</strong></p>
+                <p>Panel de Administración de Estudiantes</p>
+            </div>
+        </header>
+
+        <section class="card">
+            <h3>➕ Registrar Nuevo Estudiante</h3>
+            <div class="form-group">
+                <input type="text" id="nombre" placeholder="Nombre completo">
+                <input type="text" id="matricula" placeholder="Matrícula (ej: MAT-101)">
+                <input type="email" id="email" placeholder="Correo electrónico">
+                <button onclick="registrarEstudiante()" class="btn-save">Guardar Estudiante</button>
+            </div>
+        </section>
+
+        <section class="card">
+            <h3>📋 Lista de Alumnos Registrados</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Alumno</th>
+                            <th>Matrícula</th>
+                            <th>Correo</th>
+                            <th>Estado Pago</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-pagos"></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        async function registrarEstudiante() {
+            const nombre = document.getElementById('nombre').value;
+            const matricula = document.getElementById('matricula').value;
+            const email = document.getElementById('email').value;
+
+            if (!nombre || !matricula || !email) {
+                alert("⚠️ Por favor, completa todos los campos.");
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/registrar_estudiante', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombre, matricula, email }) 
+                });
+
+                if (response.ok) {
+                    alert("✅ Estudiante guardado con correo.");
+                    document.getElementById('nombre').value = "";
+                    document.getElementById('matricula').value = "";
+                    document.getElementById('email').value = "";
+                    cargarListaEstudiantes();
+                } else {
+                    alert("❌ Error al guardar. Verifica si la matrícula ya existe.");
+                }
+            } catch (error) {
+                alert("Error de conexión.");
+            }
+        }
+
+        async function cargarListaEstudiantes() {
+            const tbody = document.getElementById('tabla-pagos');
+            try {
+                const response = await fetch('/api/consulta/TODOS');
+                const datos = await response.json();
+                tbody.innerHTML = "";
+                datos.forEach(item => {
+                    const tr = document.createElement('tr');
+                    const statusClass = item.estado_pago === 'pagado' ? 'status-pagado' : 'status-pendiente';
+                    tr.innerHTML = `
+                        <td>${item.nombre}</td>
+                        <td>${item.matricula}</td>
+                        <td>${item.email || 'Sin correo'}</td>
+                        <td class="${statusClass}">${(item.estado_pago || 'pendiente').toUpperCase()}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (e) {
+                tbody.innerHTML = "<tr><td colspan='4'>Error al cargar datos.</td></tr>";
+            }
+        }
+
+        window.onload = cargarListaEstudiantes;
+    </script>
+</body>
+</html>
